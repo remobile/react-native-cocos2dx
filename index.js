@@ -11,7 +11,7 @@ var {
 
 const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource.js');
 resolveAssetSource.setCustomSourceTransformer((resolver)=>{
-    if (Platform.OS === 'android' && !resolver.serverUrl && !resolver.bundlePath && resolver.asset.type === 'html') {
+    if (Platform.OS === 'android' && !resolver.serverUrl && !resolver.bundlePath && (resolver.asset.type === 'html'||resolver.asset.type === 'img')) {
         resolver.bundlePath = '/android_res/';
     }
     return resolver.defaultAsset();
@@ -29,24 +29,24 @@ module.exports = React.createClass({
         };
     },
     getInjectedJavaScript() {
-        const {width, height, renderCocos2dx, renderMode, frameRate} = this.props;
+        const {width, height, renderCocos2dx, cocos2dxParams, renderMode, frameRate} = this.props;
         return `
             var canvas = document.getElementById("canvas");
             canvas.style.height = "${height}px";
             canvas.style.width = "${width}px";
             document.ccConfig = {id: "canvas", renderMode: ${renderMode}, frameRate: ${frameRate}};
-            (${renderCocos2dx.toString()})();
+            (${renderCocos2dx.toString()})(${JSON.stringify(cocos2dxParams)});
         `;
     },
     render() {
         const {width, height} = this.props;
         const script = this.getInjectedJavaScript();
+        console.log(script);
         return (
             <View style={{width, height}}>
                 <WebView
                     scrollEnabled={false}
-                    scalesPageToFit={false}
-                    underlayColor={'transparent'}
+                    scalesPageToFit={true}
                     injectedJavaScript={script}
                     style={{width, height}}
                     source={source}
