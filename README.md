@@ -5,22 +5,6 @@ A react-native wrapper cocos2dx html5
 ```sh
 npm install @remobile/react-native-cocos2dx --save
 ```
-### Installation (Android)
-```gradle
-...
-include ':react-native-cocos2dx'
-project(':react-native-cocos2dx').projectDir = new File(settingsDir, '../node_modules/@remobile/react-native-cocos2dx/android')
-```
-
-* In `android/app/build.gradle`
-
-```gradle
-...
-dependencies {
-    ...
-    compile project(':react-native-cocos2dx')
-}
-```
 
 ## Usage
 

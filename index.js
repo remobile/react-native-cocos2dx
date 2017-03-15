@@ -9,9 +9,16 @@ var {
     Dimensions,
 } = ReactNative;
 
-const source = Platform.OS==='android' ? { uri: 'file:///android_asset/remobile-cocos2dx.html' } : require('./remobile-cocos2dx.html');
+const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource.js');
+resolveAssetSource.setCustomSourceTransformer((resolver)=>{
+    if (Platform.OS === 'android' && !resolver.serverUrl && !resolver.bundlePath && resolver.asset.type === 'html') {
+        resolver.bundlePath = '/android_res/';
+    }
+    return resolver.defaultAsset();
+});
+const source = require('./remobile-cocos2dx.html');
 
-var Cocos2dx = React.createClass({
+module.exports = React.createClass({
     getDefaultProps() {
         const {width, height} = Dimensions.get('window');
         return {
@@ -48,5 +55,3 @@ var Cocos2dx = React.createClass({
         );
     }
 });
-
-module.exports = Cocos2dx;
