@@ -22,19 +22,20 @@ module.exports = React.createClass({
     getDefaultProps() {
         const {width, height} = Dimensions.get('window');
         return {
-            width,
+            width: Platform.OS === 'android' ? width+1 : width,
             height,
             renderMode: 1,
             frameRate: 60,
+            showFPS: false,
         };
     },
     getInjectedJavaScript() {
-        const {width, height, renderCocos2dx, cocos2dxParams, renderMode, frameRate} = this.props;
+        const {width, height, renderCocos2dx, cocos2dxParams, renderMode, frameRate, showFPS} = this.props;
         return `
             var canvas = document.getElementById("canvas");
-            canvas.style.height = "${height}px";
-            canvas.style.width = "${width}px";
-            document.ccConfig = {id: "canvas", renderMode: ${renderMode}, frameRate: ${frameRate}};
+            canvas.width = ${width};
+            canvas.height = ${height};
+            document.ccConfig = {id: "canvas", renderMode: ${renderMode}, frameRate: ${frameRate}, showFPS: ${showFPS}};
             (${renderCocos2dx.toString()})(${JSON.stringify(cocos2dxParams)});
         `;
     },
@@ -46,7 +47,7 @@ module.exports = React.createClass({
             <View style={{width, height}}>
                 <WebView
                     scrollEnabled={false}
-                    scalesPageToFit={true}
+                    scalesPageToFit={Platform.OS === 'android'}
                     injectedJavaScript={script}
                     style={{width, height}}
                     source={source}
