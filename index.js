@@ -47,7 +47,7 @@ module.exports = React.createClass({
                 .then(this.sendToBridgeText.bind(null, obj));
             } else {
                 const extname = url.replace(/.*\.(.*)/, '$1');
-                if (extname === 'plist') {
+                if (Platform.OS==='android' && /^file:\/\/\/android_res/.test(url)) {
                     const filename = url.replace(/.*\/(.*)\..*/, '$1');
                     fs.readFileRaw(filename, 'utf8').then(this.sendToBridgeText.bind(null, obj));
                 } else {
