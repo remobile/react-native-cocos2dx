@@ -102,8 +102,10 @@ var styles = StyleSheet.create({
 
 ## Develop with project
 ##### mkdir for cocos2dx code and resource
-* cocos2dx code directory must be <img src="https://github.com/remobile/react-native-cocos2dx/blob/master/screencasts/t1.svg"/>
-* cocos2dx resource directory must be <img src="https://github.com/remobile/react-native-cocos2dx/blob/master/screencasts/t2.svg"/>
+cocos2dx code directory must be `remobile-cocos2dx-render`
+------
+cocos2dx resource directory must be `remobile-cocos2dx-resource`
+------
 * see [example](https://github.com/remobile/react-native-template/blob/master/project/App/modules/remobile/react-native-cocos2dx)
 
 ##### add command
