@@ -28,7 +28,7 @@ module.exports = React.createClass({
             renderMode: 1,
             frameRate: 60,
             showFPS: false,
-            params: {},
+            transProps: {},
             resource: {},
         };
     },
@@ -59,7 +59,7 @@ module.exports = React.createClass({
         }
     },
     getInjectedJavaScript() {
-        const {width, height, render, resource, params, renderMode, frameRate, showFPS} = this.props;
+        const {width, height, render, resource, transProps, renderMode, frameRate, showFPS} = this.props;
         return `
         var canvas = document.getElementById("canvas");
         canvas.width = ${width};
@@ -98,7 +98,7 @@ module.exports = React.createClass({
             WebViewBridge.send(JSON.stringify({type: 'RCTCocos2dxMessage', data: data}));
         };
         cc.game.onStart = function(){
-            (${render.toString()})(${JSON.stringify(resource)}, ${JSON.stringify({...params, width, height})});
+            (${render.toString()})(${JSON.stringify(resource)}, ${JSON.stringify({...transProps, width, height})});
         };
         cc.game.run();
         `;
