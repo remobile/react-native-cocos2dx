@@ -3,6 +3,10 @@
     "version": "1.0.1",
     "description": "A react-native wrapper cocos2dx html5",
     "main": "index.js",
+    "bin": {
+        "genccresource": "bin/genres.js",
+        "genccrender": "bin/genrender.js"
+    },
     "author": {
         "name": "YunJiang.Fang",
         "email": "42550564@qq.com"
@@ -28,5 +32,10 @@
     "repository": {
         "type": "git",
         "url": "git://github.com/remobile/react-native-cocos2dx.git"
+    },
+    "dependencies": {
+        "gulp": "^3.9.1",
+        "gulp-concat": "^2.6.1",
+        "gulp-uglify": "^2.1.0"
     }
 }
