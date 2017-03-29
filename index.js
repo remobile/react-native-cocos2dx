@@ -48,8 +48,8 @@ module.exports = React.createClass({
             } else {
                 const extname = url.replace(/.*\.(.*)/, '$1');
                 if (Platform.OS==='android' && /^file:\/\/\/android_res/.test(url)) {
-                    const filename = url.replace(/.*\/(.*)\..*/, '$1');
-                    fs.readFileRaw(filename, 'utf8').then(this.sendToBridgeText.bind(null, obj));
+                    const filename = url.replace(/.*\/(.*)/, '$1');
+                    fs.readFileRes(filename, 'utf8').then(this.sendToBridgeText.bind(null, obj));
                 } else {
                     fs.readFile(url, 'utf8').then(this.sendToBridgeText.bind(null, obj));
                 }
