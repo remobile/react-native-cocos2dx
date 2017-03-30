@@ -1,18 +1,18 @@
 'use strict';
 
-var React = require('react');
-var ReactNative = require('react-native');
-var {
+const React = require('react');
+const ReactNative = require('react-native');
+const {
     View,
     Platform,
     Dimensions,
 } = ReactNative;
 
-var WebView = require('react-native-webview-bridge');
-var fs = require('react-native-fs');
+const WebView = require('react-native-webview-bridge');
+const fs = require('react-native-fs');
 const resolveAssetSource = require('react-native/Libraries/Image/resolveAssetSource.js');
-resolveAssetSource.setCustomSourceTransformer((resolver)=>{
-    if (Platform.OS === 'android' && !resolver.serverUrl && !resolver.bundlePath && (resolver.asset.type === 'html'||resolver.asset.httpServerLocation.split('/').indexOf('remobile-cocos2dx-resource') !== -1)) {
+resolveAssetSource.setCustomSourceTransformer((resolver) => {
+    if (Platform.OS === 'android' && !resolver.serverUrl && !resolver.bundlePath && (resolver.asset.type === 'html' || resolver.asset.httpServerLocation.split('/').indexOf('remobile-cocos2dx-resource') !== -1)) {
         resolver.bundlePath = '/android_res/';
     }
     return resolver.defaultAsset();
@@ -20,10 +20,10 @@ resolveAssetSource.setCustomSourceTransformer((resolver)=>{
 const source = require('./remobile-cocos2dx.html');
 
 module.exports = React.createClass({
-    getDefaultProps() {
-        const {width, height} = Dimensions.get('window');
+    getDefaultProps () {
+        const { width, height } = Dimensions.get('window');
         return {
-            width: Platform.OS === 'android' ? width+1 : width,
+            width: Platform.OS === 'android' ? width + 1 : width,
             height,
             renderMode: 1,
             frameRate: 60,
@@ -32,22 +32,22 @@ module.exports = React.createClass({
             resource: {},
         };
     },
-    sendToBridgeText(obj, text) {
+    sendToBridgeText (obj, text) {
         text = text.replace(/\n/g, '\\n').replace(/"/g, '\\"').replace(/'/g, '\\\'');
-        this.webview.sendToBridge(JSON.stringify({type: 'RCTXMLHttpResponse', text, id: obj.id}));
+        this.webview.sendToBridge(JSON.stringify({ type: 'RCTXMLHttpResponse', text, id: obj.id }));
     },
-    onBridgeMessage(msg) {
+    onBridgeMessage (msg) {
         let obj = {};
-        try { obj = JSON.parse(msg) } catch (e) {}
+        try { obj = JSON.parse(msg); } catch (e) {}
         if (obj.type === 'RCTXMLHttpRequest') {
             let url = obj.url;
             if (/^http:\/\/|^https:\/\//.test(url)) {
-                fetch(url, {method: 'get'})
+                fetch(url, { method: 'get' })
                 .then((res) => res.text())
                 .then(this.sendToBridgeText.bind(null, obj));
             } else {
                 const extname = url.replace(/.*\.(.*)/, '$1');
-                if (Platform.OS==='android' && /^file:\/\/\/android_res/.test(url)) {
+                if (Platform.OS === 'android' && /^file:\/\/\/android_res/.test(url)) {
                     const filename = url.replace(/.*\/(.*)/, '$1');
                     fs.readFileRes(filename, 'utf8').then(this.sendToBridgeText.bind(null, obj));
                 } else {
@@ -58,10 +58,10 @@ module.exports = React.createClass({
             this.props.onCocos2dxMessage && this.props.onCocos2dxMessage(obj.data);
         }
     },
-    getInjectedJavaScript() {
-        const {width, height, render, resource, transProps, renderMode, frameRate, showFPS} = this.props;
+    getInjectedJavaScript () {
+        const { width, height, render, resource, transProps, renderMode, frameRate, showFPS } = this.props;
         return `
-        var canvas = document.getElementById("canvas");
+        const canvas = document.getElementById("canvas");
         canvas.width = ${width};
         canvas.height = ${height};
         window.XMLHttpRequest = function RCTXMLHttpRequest()  {
@@ -85,7 +85,7 @@ module.exports = React.createClass({
             };
         };
         WebViewBridge.onMessage = function(msg){
-            var obj = {};
+            const obj = {};
             try { obj = JSON.parse(msg) } catch (e) {}
             if (obj.type === 'RCTXMLHttpResponse') {
                 if (XMLHttpRequest.requests[obj.id]) {
@@ -98,26 +98,26 @@ module.exports = React.createClass({
             WebViewBridge.send(JSON.stringify({type: 'RCTCocos2dxMessage', data: data}));
         };
         cc.game.onStart = function(){
-            (${render.toString()})(${JSON.stringify(resource)}, ${JSON.stringify({...transProps, width, height})});
+            (${render.toString()})(${JSON.stringify(resource)}, ${JSON.stringify({ ...transProps, width, height })});
         };
         cc.game.run();
         `;
     },
-    render() {
-        const {width, height} = this.props;
+    render () {
+        const { width, height } = this.props;
         const script = this.getInjectedJavaScript();
         return (
-            <View style={{width, height}}>
+            <View style={{ width, height }}>
                 <WebView
-                    ref={(ref)=>{this.webview=ref}}
+                    ref={(ref) => { this.webview = ref; }}
                     scrollEnabled={false}
                     scalesPageToFit={Platform.OS === 'android'}
                     injectedJavaScript={script}
                     onBridgeMessage={this.onBridgeMessage}
-                    style={{width, height}}
+                    style={{ width, height }}
                     source={source}
                     />
             </View>
         );
-    }
+    },
 });

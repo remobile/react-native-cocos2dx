@@ -1,33 +1,52 @@
 #!/usr/bin/env node
-var gulp = require('gulp');
-var gutil = require('gulp-util');
-var chalk = require('chalk');
-var prettyTime = require('pretty-hrtime');
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
-var through = require('through2');
-var path = require('path');
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const chalk = require('chalk');
+const prettyTime = require('pretty-hrtime');
+const concat = require('gulp-concat');
+const uglify = require('gulp-uglify');
+const through = require('through2');
+const path = require('path');
 
-var args = process.argv.splice(2);
-var srcPath = args[0];
-var targetFile = args[1];
-var type = args[2] || 'default';
+const args = process.argv.splice(2);
+const srcPath = args[0];
+const targetFile = args[1];
+const type = args[2] || 'default';
 
-gulp.on('task_start', function(e) {
+function formatError (e) {
+    if (!e.err) {
+        return e.message;
+    }
+
+    // PluginError
+    if (typeof e.err.showStack === 'boolean') {
+        return e.err.toString();
+    }
+
+    // Normal error
+    if (e.err.stack) {
+        return e.err.stack;
+    }
+
+    // Unknown (string, number, etc.)
+    return new Error(String(e.err)).stack;
+}
+
+gulp.on('task_start', function (e) {
     gutil.log('Starting', '\'' + chalk.cyan(e.task) + '\'...');
 });
 
-gulp.on('task_stop', function(e) {
-    var time = prettyTime(e.hrDuration);
+gulp.on('task_stop', function (e) {
+    const time = prettyTime(e.hrDuration);
     gutil.log(
         'Finished', '\'' + chalk.cyan(e.task) + '\'',
         'after', chalk.magenta(time)
     );
 });
 
-gulp.on('task_err', function(e) {
-    var msg = formatError(e);
-    var time = prettyTime(e.hrDuration);
+gulp.on('task_err', function (e) {
+    const msg = formatError(e);
+    const time = prettyTime(e.hrDuration);
     gutil.log(
         '\'' + chalk.cyan(e.task) + '\'',
         chalk.red('errored after'),
@@ -36,7 +55,7 @@ gulp.on('task_err', function(e) {
     gutil.log(msg);
 });
 
-gulp.on('task_not_found', function(err) {
+gulp.on('task_not_found', function (err) {
     gutil.log(
         chalk.red('Task \'' + err.task + '\' is not in your gulpfile')
     );
@@ -44,20 +63,20 @@ gulp.on('task_not_found', function(err) {
     process.exit(1);
 });
 
-gulp.task('default', function() {
-    var filename = path.basename(targetFile);
-    var destPath = path.dirname(targetFile);
+gulp.task('default', function () {
+    const filename = path.basename(targetFile);
+    const destPath = path.dirname(targetFile);
     return gulp.src([
-        srcPath+'/**/*.js',
+        srcPath + '/**/*.js',
     ])
     .pipe(concat(filename))
-    .pipe(uglify({compress: {drop_console: true}}))
-    .pipe(through.obj((file, encoding, callback)=>{file.contents = new Buffer('module.exports=(res, params)=>{'+String(file.contents)+ '}'); callback(null, file);}))
+    .pipe(uglify({ compress: { drop_console: true } }))
+    .pipe(through.obj((file, encoding, callback) => { file.contents = new Buffer('module.exports=(res, params)=>{' + String(file.contents) + '}'); callback(null, file); }))
     .pipe(gulp.dest(destPath));
 });
 
-gulp.task('dev', ['default'], function() {
-    gulp.watch([srcPath+'/**/*.js'], ['default']);
+gulp.task('dev', ['default'], function () {
+    gulp.watch([srcPath + '/**/*.js'], ['default']);
 });
 
 gulp.start(type);
